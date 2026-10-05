@@ -9,7 +9,6 @@ import {
   View,
 } from 'react-native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {fetchWeather} from '../api/weather';
 import CityPicker from '../components/CityPicker';
 import CurrentWeather from '../components/CurrentWeather';
@@ -21,7 +20,6 @@ import type {ForecastResponse, RootStackParamList} from '../types';
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 function HomeScreen({navigation}: Props) {
-  const insets = useSafeAreaInsets();
   const [forecasts, setForecasts] = useState<ForecastResponse[]>([]);
   const [selectedCityId, setSelectedCityId] = useState(CITIES[0].id);
   const [loading, setLoading] = useState(true);
@@ -88,7 +86,7 @@ function HomeScreen({navigation}: Props) {
   };
 
   return (
-    <View style={[styles.container, {paddingTop: insets.top}]}>
+    <View style={styles.container}>
       {loading ? (
         <View style={styles.center}>
           <ActivityIndicator size="large" color="#1e6fb8" />

@@ -1,7 +1,7 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-import type {CurrentWeather as CurrentWeatherData} from '../types';
-import {getWeatherStatus, windDirectionLabel} from '../utils/weather';
+import { StyleSheet, Text, View } from 'react-native';
+import type { CurrentWeather as CurrentWeatherData } from '../types';
+import { getWeatherStatus, windDirectionLabel } from '../utils/weather';
 
 interface Props {
   cityName: string;
@@ -10,7 +10,7 @@ interface Props {
   todayMin: number;
 }
 
-function CurrentWeather({cityName, current, todayMax, todayMin}: Props) {
+function CurrentWeather({ cityName, current, todayMax, todayMin }: Props) {
   const status = getWeatherStatus(current.weather_code);
   return (
     <View style={styles.card}>
@@ -35,7 +35,7 @@ function CurrentWeather({cityName, current, todayMax, todayMin}: Props) {
         </Text>
         <Text style={styles.stat}>
           Gió {Math.round(current.wind_speed_10m)} km/h{' '}
-          {windDirectionLabel(current.wind_direction_10m)}
+          {'Hướng '}{windDirectionLabel(current.wind_direction_10m)}
         </Text>
       </View>
     </View>
