@@ -65,3 +65,46 @@ export function findCurrentHourIndex(
   const next = hourly.time.findIndex(time => time >= currentTime);
   return next >= 0 ? next : 0;
 }
+
+/** UV index -> mức độ + màu hiển thị */
+export function getUvLevel(uv: number): {label: string; color: string} {
+  if (uv < 3) {
+    return {label: 'Thấp', color: '#3e9b4f'};
+  }
+  if (uv < 6) {
+    return {label: 'Trung bình', color: '#d9a013'};
+  }
+  if (uv < 8) {
+    return {label: 'Cao', color: '#e07b00'};
+  }
+  if (uv < 11) {
+    return {label: 'Rất cao', color: '#d63b2f'};
+  }
+  return {label: 'Cực đoan', color: '#a24bd6'};
+}
+
+const WIND_DIRECTIONS = [
+  'Bắc',
+  'Đông Bắc',
+  'Đông',
+  'Đông Nam',
+  'Nam',
+  'Tây Nam',
+  'Tây',
+  'Tây Bắc',
+];
+
+/** Góc gió (hướng gió đến từ) -> tên 8 hướng */
+export function windDirectionLabel(deg: number): string {
+  const index = Math.round((deg % 360) / 45) % 8;
+  return WIND_DIRECTIONS[index];
+}
+
+/** Tầm nhìn (mét) -> chuỗi km */
+export function formatVisibility(meters: number | null): string {
+  if (meters == null) {
+    return '—';
+  }
+  const km = meters / 1000;
+  return `${km >= 10 ? Math.round(km) : km.toFixed(1)} km`;
+}

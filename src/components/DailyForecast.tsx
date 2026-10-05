@@ -1,34 +1,44 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {Pressable, StyleSheet, Text, View} from 'react-native';
 import type {DailyData} from '../types';
 import {formatDay, getWeatherStatus} from '../utils/weather';
 
 interface Props {
   daily: DailyData;
+  onPressDay: (index: number) => void;
 }
 
-function DailyForecast({daily}: Props) {
+function DailyForecast({daily, onPressDay}: Props) {
   return (
     <View style={styles.card}>
       <Text style={styles.title}>Dự báo theo ngày</Text>
       {daily.time.map((date, index) => {
         const status = getWeatherStatus(daily.weather_code[index]);
+        const probability = daily.precipitation_probability_max[index];
         return (
-          <View key={date} style={styles.row}>
+          <Pressable
+            key={date}
+            style={({pressed}) => [styles.row, pressed && styles.rowPressed]}
+            onPress={() => onPressDay(index)}>
             <Text style={styles.day}>
               {index === 0 ? 'Hôm nay' : formatDay(date)}
             </Text>
             <Text style={styles.emoji}>{status.emoji}</Text>
-            <Text style={styles.temps}>
-              <Text style={styles.tempMin}>
-                {Math.round(daily.temperature_2m_min[index])}°
+            <View style={styles.rightColumn}>
+              <Text style={styles.temps}>
+                <Text style={styles.tempMin}>
+                  {Math.round(daily.temperature_2m_min[index])}°
+                </Text>
+                {'   '}
+                <Text style={styles.tempMax}>
+                  {Math.round(daily.temperature_2m_max[index])}°
+                </Text>
               </Text>
-              {'   '}
-              <Text style={styles.tempMax}>
-                {Math.round(daily.temperature_2m_max[index])}°
+              <Text style={styles.rain}>
+                💧 {probability == null ? '—' : `${probability}%`}
               </Text>
-            </Text>
-          </View>
+            </View>
+          </Pressable>
         );
       })}
     </View>
@@ -51,8 +61,13 @@ const styles = StyleSheet.create({
   },
   row: {
     alignItems: 'center',
+    borderRadius: 10,
     flexDirection: 'row',
     paddingVertical: 8,
+    paddingHorizontal: 4,
+  },
+  rowPressed: {
+    backgroundColor: '#e8f1fa',
   },
   day: {
     color: '#1c2b3a',
@@ -63,8 +78,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginRight: 12,
   },
+  rightColumn: {
+    alignItems: 'flex-end',
+    width: 96,
+  },
   temps: {
-    width: 72,
     textAlign: 'right',
   },
   tempMin: {
@@ -75,6 +93,11 @@ const styles = StyleSheet.create({
     color: '#1c2b3a',
     fontSize: 15,
     fontWeight: '600',
+  },
+  rain: {
+    color: '#3f7fb5',
+    fontSize: 12,
+    marginTop: 2,
   },
 });
 

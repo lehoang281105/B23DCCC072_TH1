@@ -1,14 +1,16 @@
 import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import type {CurrentWeather as CurrentWeatherData} from '../types';
-import {getWeatherStatus} from '../utils/weather';
+import {getWeatherStatus, windDirectionLabel} from '../utils/weather';
 
 interface Props {
   cityName: string;
   current: CurrentWeatherData;
+  todayMax: number;
+  todayMin: number;
 }
 
-function CurrentWeather({cityName, current}: Props) {
+function CurrentWeather({cityName, current, todayMax, todayMin}: Props) {
   const status = getWeatherStatus(current.weather_code);
   return (
     <View style={styles.card}>
@@ -19,7 +21,23 @@ function CurrentWeather({cityName, current}: Props) {
       <Text style={styles.status}>
         {status.emoji} {status.label}
       </Text>
-      <Text style={styles.extra}>Độ ẩm: {current.relative_humidity_2m}%</Text>
+      <Text style={styles.feelsLike}>
+        Cảm giác như {Math.round(current.apparent_temperature)}°
+      </Text>
+      <View style={styles.statsRow}>
+        <Text style={styles.stat}>
+          Cao nhất {Math.round(todayMax)}° · Thấp nhất {Math.round(todayMin)}°
+        </Text>
+      </View>
+      <View style={styles.statsRow}>
+        <Text style={styles.stat}>
+          Độ ẩm {current.relative_humidity_2m}%
+        </Text>
+        <Text style={styles.stat}>
+          Gió {Math.round(current.wind_speed_10m)} km/h{' '}
+          {windDirectionLabel(current.wind_direction_10m)}
+        </Text>
+      </View>
     </View>
   );
 }
@@ -48,10 +66,19 @@ const styles = StyleSheet.create({
     color: '#33475b',
     fontSize: 18,
   },
-  extra: {
+  feelsLike: {
+    color: '#6b7f93',
+    fontSize: 15,
+    marginTop: 4,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    marginTop: 8,
+  },
+  stat: {
     color: '#6b7f93',
     fontSize: 14,
-    marginTop: 8,
+    marginHorizontal: 6,
   },
 });
 

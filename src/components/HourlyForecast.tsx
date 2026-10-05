@@ -1,16 +1,17 @@
 import React from 'react';
-import {FlatList, StyleSheet, Text, View} from 'react-native';
+import {FlatList, Pressable, StyleSheet, Text, View} from 'react-native';
 import type {HourlyData} from '../types';
 import {findCurrentHourIndex, formatHour, getWeatherStatus} from '../utils/weather';
 
 interface Props {
   hourly: HourlyData;
   currentTime: string;
+  onPressHour: (index: number) => void;
 }
 
 const MAX_HOURS = 24;
 
-function HourlyForecast({hourly, currentTime}: Props) {
+function HourlyForecast({hourly, currentTime, onPressHour}: Props) {
   const start = findCurrentHourIndex(hourly, currentTime);
   const count = Math.min(MAX_HOURS, hourly.time.length - start);
   const indices = Array.from({length: count}, (_, i) => start + i);
@@ -25,8 +26,11 @@ function HourlyForecast({hourly, currentTime}: Props) {
         keyExtractor={index => String(index)}
         renderItem={({item: hourIndex}) => {
           const status = getWeatherStatus(hourly.weather_code[hourIndex]);
+          const probability = hourly.precipitation_probability[hourIndex];
           return (
-            <View style={styles.item}>
+            <Pressable
+              style={({pressed}) => [styles.item, pressed && styles.itemPressed]}
+              onPress={() => onPressHour(hourIndex)}>
               <Text style={styles.itemLabel}>
                 {hourIndex === start
                   ? 'Bây giờ'
@@ -36,7 +40,10 @@ function HourlyForecast({hourly, currentTime}: Props) {
               <Text style={styles.itemTemp}>
                 {Math.round(hourly.temperature_2m[hourIndex])}°
               </Text>
-            </View>
+              <Text style={styles.itemRain}>
+                💧 {probability == null ? '—' : `${probability}%`}
+              </Text>
+            </Pressable>
           );
         }}
       />
@@ -60,7 +67,12 @@ const styles = StyleSheet.create({
   },
   item: {
     alignItems: 'center',
-    marginRight: 20,
+    borderRadius: 12,
+    marginRight: 8,
+    padding: 8,
+  },
+  itemPressed: {
+    backgroundColor: '#e8f1fa',
   },
   itemLabel: {
     color: '#6b7f93',
@@ -74,6 +86,11 @@ const styles = StyleSheet.create({
     color: '#1c2b3a',
     fontSize: 15,
     fontWeight: '600',
+  },
+  itemRain: {
+    color: '#3f7fb5',
+    fontSize: 12,
+    marginTop: 4,
   },
 });
 
